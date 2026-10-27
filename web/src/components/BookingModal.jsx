@@ -1,73 +1,112 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { trackBookingCompleted } from '../utils/actionLog';
 import { staticServices } from '../data/staticServices';
 import TermsAndConditionsModal from './TermsAndConditionsModal';
-import { 
-  X, 
-  Calendar, 
-  Sparkles, 
-  CheckCircle2, 
-  MessageSquare, 
-  MapPin, 
-  Video, 
-  Clock, 
-  User, 
-  FileText,
+import {
+  X,
+  Calendar,
+  Sparkles,
+  CheckCircle2,
+  MessageSquare,
+  MapPin,
+  Video,
+  Clock,
   ExternalLink,
   PhoneCall,
-  CalendarDays,
-  ShieldCheck
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Pencil
 } from 'lucide-react';
 
-const serviceCategories = [
-  { id: 'katha', label: 'श्रीमद्भागवत कथा (Bhagwat Katha)' },
-  { id: 'pooja', label: 'विशिष्ट पूजा (Sacred Pooja)' },
-  { id: 'dosh_nivaran', label: 'दोष निवारण एवं वास्तु (Dosh & Vastu)' },
-  { id: 'abhishekh', label: 'पवित्र अभिषेक (Abhishekh)' },
-  { id: 'hawan', label: 'वैदिक हवन एवं होमम् (Hawan & Homam)' },
-  { id: 'ratna_salah', label: 'रत्न व ज्योतिष परामर्श (Astrology)' }
+const STEPS = [
+  { label: 'अनुष्ठान', title: 'कौन-सा अनुष्ठान कराना है?', hint: 'माध्यम एवं पूजा चुनें' },
+  { label: 'तिथि', title: 'आपकी सुविधा की तिथियां', hint: 'पंडित जी इनमें से श्रेष्ठ मुहूर्त तय करेंगे' },
+  { label: 'विवरण', title: 'यजमान का परिचय', hint: 'संकल्प हेतु आवश्यक जानकारी' },
+  { label: 'पुष्टि', title: 'एक बार जाँच लें', hint: 'सब सही है तो बुकिंग पूर्ण करें' }
 ];
 
-const calendarTimeSlots = [
-  { value: 'प्रातः 09:00 - 11:00 AM (Morning Slot)', label: 'प्रातः 09:00 - 11:00 AM (Morning Slot)' },
-  { value: 'मध्याह्न 11:00 - 01:00 PM (Midday Slot)', label: 'मध्याह्न 11:00 - 01:00 PM (Midday Slot)' },
-  { value: 'दोपहर 02:00 - 04:00 PM (Afternoon Slot)', label: 'दोपहर 02:00 - 04:00 PM (Afternoon Slot)' },
-  { value: 'सायं 04:00 - 06:00 PM (Evening Slot)', label: 'सायं 04:00 - 06:00 PM (Evening Slot)' },
-  { value: 'संध्या 06:00 - 08:00 PM (Late Evening Slot)', label: 'संध्या 06:00 - 08:00 PM (Late Evening Slot)' },
-  { value: 'पंडित जी की उपलब्धता अनुसार (Flexible Slot)', label: 'पंडित जी की उपलब्धता अनुसार (Flexible Slot)' }
+const categoryChips = [
+  { id: 'all', label: 'सभी' },
+  { id: 'katha', label: 'कथा' },
+  { id: 'pooja', label: 'पूजा' },
+  { id: 'dosh_nivaran', label: 'दोष निवारण' },
+  { id: 'abhishekh', label: 'अभिषेक' },
+  { id: 'hawan', label: 'हवन' },
+  { id: 'ratna_salah', label: 'ज्योतिष' }
 ];
+
+// `value` strings are stored with the booking, so they must stay unchanged
+const timeSlots = [
+  { value: 'प्रातः 09:00 - 11:00 AM (Morning Slot)', label: 'प्रातः', time: '9 – 11 AM' },
+  { value: 'मध्याह्न 11:00 - 01:00 PM (Midday Slot)', label: 'मध्याह्न', time: '11 AM – 1 PM' },
+  { value: 'दोपहर 02:00 - 04:00 PM (Afternoon Slot)', label: 'दोपहर', time: '2 – 4 PM' },
+  { value: 'सायं 04:00 - 06:00 PM (Evening Slot)', label: 'सायं', time: '4 – 6 PM' },
+  { value: 'संध्या 06:00 - 08:00 PM (Late Evening Slot)', label: 'संध्या', time: '6 – 8 PM' },
+  { value: 'पंडित जी की उपलब्धता अनुसार (Flexible Slot)', label: 'कोई भी', time: 'पंडित जी अनुसार' }
+];
+
+const sankalpSuggestions = ['गृह प्रवेश', 'स्वास्थ्य लाभ', 'विवाह बाधा शांति', 'संतान सुख', 'व्यापार वृद्धि', 'पितृ शांति'];
+
+const dateFields = [
+  { name: 'preferred_date', label: 'पहली पसंद', required: true },
+  { name: 'second_date', label: 'दूसरी पसंद', required: true },
+  { name: 'third_date', label: 'तीसरी पसंद', required: false }
+];
+
+const formatDate = (value) => {
+  if (!value) return '';
+  const d = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return value;
+  return d.toLocaleDateString('hi-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+};
+
+const modeLabel = (mode) => (mode === 'Offline' ? 'प्रत्यक्ष पूजा' : 'ऑनलाइन पूजा');
+
+const initialFormData = {
+  service_id: '',
+  service_title: '',
+  ritual_mode: 'Offline',
+  preferred_date: '',
+  second_date: '',
+  third_date: '',
+  preferred_time: timeSlots[0].value,
+  devotee_name: '',
+  phone: '',
+  gotra: '',
+  city: '',
+  venue_address: '',
+  special_sankalp: '',
+  terms_accepted: true
+};
 
 export default function BookingModal({ initialService, isOpen, onClose }) {
   const { user } = useAuth();
   const toast = useToast();
+  const contentRef = useRef(null);
 
-  // Core Mode: 'Offline' (प्रत्यक्ष पूजा) or 'Online' (ऑनलाइन पूजा)
   const [activeSection, setActiveSection] = useState('Offline');
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [step, setStep] = useState(0);
+  const [maxStep, setMaxStep] = useState(0);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [showCalendarViewer, setShowCalendarViewer] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
-
-  const [formData, setFormData] = useState({
-    service_id: '',
-    service_title: '',
-    ritual_mode: 'Offline',
-    preferred_date: '',
-    second_date: '',
-    third_date: '',
-    preferred_time: 'प्रातः 09:00 - 11:00 AM (Morning Slot)',
-    devotee_name: '',
-    phone: '',
-    gotra: '',
-    city: '',
-    venue_address: '',
-    special_sankalp: '',
-    terms_accepted: true
-  });
-
+  const [formData, setFormData] = useState(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedBooking, setSubmittedBooking] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
+
+  // Start every opening from the first step
+  useEffect(() => {
+    if (!isOpen) return;
+    setStep(0);
+    setMaxStep(0);
+    setFieldErrors({});
+    setActiveCategory('all');
+  }, [isOpen]);
 
   // Synchronize initialService and user details when modal opens
   useEffect(() => {
@@ -82,10 +121,10 @@ export default function BookingModal({ initialService, isOpen, onClose }) {
     }
 
     if (initialService) {
-      const mode = (initialService.modes && initialService.modes.includes('Offline')) 
-        ? 'Offline' 
+      const mode = (initialService.modes && initialService.modes.includes('Offline'))
+        ? 'Offline'
         : (initialService.modes && initialService.modes.includes('Online')) ? 'Online' : 'Offline';
-      
+
       setActiveSection(mode);
       setFormData(prev => ({
         ...prev,
@@ -105,11 +144,26 @@ export default function BookingModal({ initialService, isOpen, onClose }) {
     }
   }, [initialService, isOpen, user]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape' && !isTermsOpen) handleClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
+
+  useEffect(() => {
+    if (contentRef.current) contentRef.current.scrollTop = 0;
+  }, [step, submittedBooking]);
+
   if (!isOpen) return null;
 
-  // Handle mode switch between Offline & Online
+  const today = new Date().toISOString().split('T')[0];
+
   const handleSectionSwitch = (section) => {
     setActiveSection(section);
+    setActiveCategory('all');
     setFormData(prev => {
       const currentSvc = staticServices.find(s => s.title === prev.service_title);
       let newTitle = prev.service_title;
@@ -123,74 +177,125 @@ export default function BookingModal({ initialService, isOpen, onClose }) {
         }
       }
 
-      return {
-        ...prev,
-        ritual_mode: section,
-        service_title: newTitle,
-        service_id: newId
-      };
+      return { ...prev, ritual_mode: section, service_title: newTitle, service_id: newId };
     });
+  };
+
+  const clearFieldError = (name) => {
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      });
+    }
   };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({ 
-      ...prev, 
-      [name]: type === 'checkbox' ? checked : value 
-    }));
+    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+    clearFieldError(name);
   };
 
-  const handleServiceChange = (e) => {
-    const selectedTitle = e.target.value;
-    const found = staticServices.find(s => s.title === selectedTitle);
-    setFormData(prev => ({
-      ...prev,
-      service_title: selectedTitle,
-      service_id: found ? found.id : null
-    }));
+  const setField = (name, value) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
+    clearFieldError(name);
   };
 
-  // Filter services supported in active mode
-  const filteredServices = staticServices.filter(s => {
-    return !s.modes || s.modes.includes(activeSection);
-  });
+  const selectService = (svc) => {
+    setFormData(prev => ({ ...prev, service_title: svc.title, service_id: svc.id }));
+    clearFieldError('service_title');
+  };
 
+  const toggleSankalp = (tag) => {
+    setFormData(prev => {
+      const parts = prev.special_sankalp.split(',').map(p => p.trim()).filter(Boolean);
+      const next = parts.includes(tag) ? parts.filter(p => p !== tag) : [...parts, tag];
+      return { ...prev, special_sankalp: next.join(', ') };
+    });
+  };
+
+  const modeServices = staticServices.filter(s => !s.modes || s.modes.includes(activeSection));
+  const visibleChips = categoryChips.filter(c => c.id === 'all' || modeServices.some(s => s.category === c.id));
+  const visibleServices = activeCategory === 'all'
+    ? modeServices
+    : modeServices.filter(s => s.category === activeCategory);
   const activeServiceObj = staticServices.find(s => s.title === formData.service_title);
+  const selectedSankalp = formData.special_sankalp.split(',').map(p => p.trim());
+
+  const validateStep = (index) => {
+    const errs = {};
+    if (index === 0) {
+      if (!formData.service_title) errs.service_title = 'कृपया एक अनुष्ठान चुनें।';
+    }
+    if (index === 1) {
+      if (!formData.preferred_date) errs.preferred_date = 'पहली पसंद की तिथि चुनें।';
+      if (!formData.second_date) errs.second_date = 'दूसरी पसंद की तिथि चुनें।';
+      else if (formData.second_date === formData.preferred_date) errs.second_date = 'कृपया अलग तिथि चुनें।';
+      if (formData.third_date && [formData.preferred_date, formData.second_date].includes(formData.third_date)) {
+        errs.third_date = 'कृपया अलग तिथि चुनें।';
+      }
+    }
+    if (index === 2) {
+      if (!formData.devotee_name.trim()) errs.devotee_name = 'यजमान का पूरा नाम दर्ज करें।';
+      if (!formData.phone.trim()) errs.phone = 'मोबाइल / WhatsApp नंबर दर्ज करें।';
+      else if (formData.phone.replace(/\D/g, '').length < 10) errs.phone = 'कृपया सही १० अंकों का नंबर दर्ज करें।';
+      if (activeSection === 'Offline' && !formData.venue_address.trim()) errs.venue_address = 'पूजा स्थल का पता दर्ज करें।';
+      if (activeSection === 'Online' && !formData.city.trim()) errs.city = 'अपना नगर / देश दर्ज करें।';
+    }
+    if (index === 3) {
+      if (!formData.terms_accepted) errs.terms_accepted = 'आगे बढ़ने हेतु नियम एवं शर्तें स्वीकार करें।';
+    }
+    return errs;
+  };
+
+  const goToStep = (index) => {
+    if (index <= maxStep) {
+      setFieldErrors({});
+      setStep(index);
+    }
+  };
+
+  const goNext = () => {
+    const errs = validateStep(step);
+    setFieldErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+    const next = Math.min(step + 1, STEPS.length - 1);
+    setStep(next);
+    setMaxStep(prev => Math.max(prev, next));
+  };
+
+  const goBack = () => {
+    setFieldErrors({});
+    setStep(prev => Math.max(prev - 1, 0));
+  };
+
+  const recordFallbackBooking = () => {
+    const mockBooking = {
+      id: Math.floor(1000 + Math.random() * 9000),
+      ...formData,
+      status: 'pending'
+    };
+    setSubmittedBooking(mockBooking);
+    toast.success('पूजा Booking सङ्कल्प दर्ज कर लिया गया है।', 'सङ्कल्प पुष्ट');
+    trackBookingCompleted(mockBooking.id, formData.service_title, formData.ritual_mode);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.service_title) {
-      setErrorMsg('कृपया अनुष्ठान का चयन करें।');
+    if (step < STEPS.length - 1) {
+      goNext();
       return;
     }
-    if (!formData.preferred_date) {
-      setErrorMsg('कृपया प्राथमिक अभीष्ट तिथि का चयन करें।');
-      return;
-    }
-    if (!formData.second_date) {
-      setErrorMsg('कृपया द्वितीय संभावित तिथि का चयन करें।');
-      return;
-    }
-    if (!formData.devotee_name.trim()) {
-      setErrorMsg('कृपया यजमान का पूरा नाम दर्ज करें।');
-      return;
-    }
-    if (!formData.phone.trim()) {
-      setErrorMsg('कृपया संपर्क दूरभाष / WhatsApp नंबर दर्ज करें।');
-      return;
-    }
-    if (activeSection === 'Offline' && !formData.venue_address.trim()) {
-      setErrorMsg('प्रत्यक्ष पूजा हेतु कृपया पूजा स्थल / गृह का पता अवश्य दर्ज करें।');
-      return;
-    }
-    if (activeSection === 'Online' && !formData.city.trim()) {
-      setErrorMsg('ऑनलाइन पूजा संकल्प हेतु कृपया अपना गृह नगर / देश दर्ज करें।');
-      return;
-    }
-    if (!formData.terms_accepted) {
-      setErrorMsg('कृपया आगे बढ़ने से पूर्व सेवा नियम एवं शर्तों को स्वीकार करें।');
-      return;
+
+    for (let i = 0; i < STEPS.length; i++) {
+      const errs = validateStep(i);
+      if (Object.keys(errs).length > 0) {
+        setFieldErrors(errs);
+        setStep(i);
+        return;
+      }
     }
 
     setErrorMsg('');
@@ -208,25 +313,11 @@ export default function BookingModal({ initialService, isOpen, onClose }) {
         toast.success(`पूजा Booking #${data.data.id ? data.data.id.toString().padStart(4, '0') : ''} दर्ज हुई!`, 'सङ्कल्प पुष्ट');
         trackBookingCompleted(data.data.id, formData.service_title, formData.ritual_mode);
       } else {
-        const mockBooking = {
-          id: Math.floor(1000 + Math.random() * 9000),
-          ...formData,
-          status: 'pending'
-        };
-        setSubmittedBooking(mockBooking);
-        toast.success('पूजा Booking सङ्कल्प दर्ज कर लिया गया है।', 'सङ्कल्प पुष्ट');
-        trackBookingCompleted(mockBooking.id, formData.service_title, formData.ritual_mode);
+        recordFallbackBooking();
       }
     } catch (err) {
       console.warn('Booking API fallback:', err);
-      const mockBooking = {
-        id: Math.floor(1000 + Math.random() * 9000),
-        ...formData,
-        status: 'pending'
-      };
-      setSubmittedBooking(mockBooking);
-      toast.success('पूजा Booking सङ्कल्प दर्ज कर लिया गया है।', 'सङ्कल्प पुष्ट');
-      trackBookingCompleted(mockBooking.id, formData.service_title, formData.ritual_mode);
+      recordFallbackBooking();
     } finally {
       setIsSubmitting(false);
     }
@@ -275,881 +366,455 @@ export default function BookingModal({ initialService, isOpen, onClose }) {
       `Booking Ref: #VN-${submittedBooking.id}`
     );
     const location = encodeURIComponent(
-      submittedBooking.ritual_mode === 'Offline' 
+      submittedBooking.ritual_mode === 'Offline'
         ? (submittedBooking.venue_address || 'यजमान का स्थल')
         : 'Google Meet / ऑनलाइन लाइव वीडियो'
     );
     const cleanDate = (submittedBooking.preferred_date || '').replace(/-/g, '');
     const dates = cleanDate ? `${cleanDate}T043000Z/${cleanDate}T053000Z` : '';
     const addGuest = encodeURIComponent('panditrakeshrawal26@gmail.com');
-    
+
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}&add=${addGuest}${dates ? `&dates=${dates}` : ''}`;
   };
 
-  const handleClose = () => {
+  function handleClose() {
     setSubmittedBooking(null);
     setErrorMsg('');
+    setFieldErrors({});
     setShowCalendarViewer(false);
     onClose();
-  };
+  }
+
+  const renderError = (name) => (
+    fieldErrors[name] ? <p className="bk-field-error" role="alert">{fieldErrors[name]}</p> : null
+  );
+
+  const currentStep = STEPS[step];
+  const isLastStep = step === STEPS.length - 1;
+  const selectedSlot = timeSlots.find(t => t.value === formData.preferred_time);
+
+  const reviewRows = [
+    { step: 0, label: 'अनुष्ठान', value: `${formData.service_title} · ${modeLabel(activeSection)}` },
+    {
+      step: 1,
+      label: 'तिथियां',
+      value: [formData.preferred_date, formData.second_date, formData.third_date].filter(Boolean).map(formatDate).join('  |  ')
+    },
+    { step: 1, label: 'समय', value: selectedSlot ? `${selectedSlot.label} · ${selectedSlot.time}` : formData.preferred_time },
+    { step: 2, label: 'यजमान', value: `${formData.devotee_name}${formData.gotra ? ` (${formData.gotra} गोत्र)` : ''} · ${formData.phone}` },
+    { step: 2, label: activeSection === 'Offline' ? 'पूजा स्थल' : 'नगर', value: activeSection === 'Offline' ? formData.venue_address : formData.city },
+    ...(formData.special_sankalp ? [{ step: 2, label: 'सङ्कल्प', value: formData.special_sankalp }] : [])
+  ];
 
   return (
     <>
       <div className="modal-overlay" onClick={handleClose}>
-        <div 
-          className="modal-content" 
+        <div
+          ref={contentRef}
+          className="modal-content bk-modal"
           onClick={e => e.stopPropagation()}
-          style={{ 
-            maxWidth: '640px', 
-            padding: '1.6rem 2rem',
-            borderRadius: 'var(--radius-sm)'
-          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="bk-title"
         >
-          {/* Close Button */}
-          <button
-            onClick={handleClose}
-            style={{
-              position: 'absolute',
-              top: '1rem',
-              right: '1rem',
-              background: 'var(--color-stone-surface)',
-              border: '1px solid var(--color-stone-border)',
-              color: 'var(--color-burgundy-base)',
-              width: '32px',
-              height: '32px',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
-            aria-label="Close modal"
-          >
+          <button type="button" onClick={handleClose} className="bk-close" aria-label="Close modal">
             <X size={16} />
           </button>
 
-          {/* Modal Header */}
-          <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.3rem' }}>
-              <picture>
-                <source srcSet="/Logo-emblem-transparent.webp" type="image/webp" />
-                <img
-                  src="/Logo-emblem-transparent.png"
-                  alt="VedNetra Emblem"
-                  loading="lazy"
-                  decoding="async"
-                  style={{ width: '38px', height: '38px', objectFit: 'contain' }}
-                />
-              </picture>
-            </div>
-            <h3 style={{ 
-              fontSize: '1.38rem', 
-              color: 'var(--color-text-charcoal)', 
-              marginBottom: '0.2rem',
-              fontFamily: 'var(--font-heading)',
-              fontWeight: 600
-            }}>
-              Book Sacred Pooja (वैदिक संकल्प)
-            </h3>
-            <p style={{ fontSize: '0.8rem', color: 'var(--color-text-stone-body)', margin: 0 }}>
-              पं. राकेश चन्द्र रावल • ३ तिथियों का विकल्प एवं ऑनलाइन मुहूर्त निर्धारण
-            </p>
-          </div>
-
-          {/* Form or Confirmation */}
           {!submittedBooking ? (
-            <div>
-              {/* 1. Mode Switcher (Segmented Pill Control) */}
-              <div style={{ marginBottom: '0.9rem' }}>
-                <div style={{
-                  display: 'flex',
-                  background: 'var(--color-stone-surface)',
-                  padding: '3px',
-                  borderRadius: 'var(--radius-full)',
-                  border: '1px solid var(--color-stone-border)',
-                  gap: '3px'
-                }}>
-                  <button
-                    type="button"
-                    onClick={() => handleSectionSwitch('Offline')}
-                    style={{
-                      flex: 1,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '0.4rem',
-                      padding: '0.48rem 0.8rem',
-                      borderRadius: 'var(--radius-full)',
-                      border: 'none',
-                      cursor: 'pointer',
-                      fontWeight: activeSection === 'Offline' ? 600 : 500,
-                      fontSize: '0.86rem',
-                      background: activeSection === 'Offline' ? 'var(--color-burgundy-base)' : 'transparent',
-                      color: activeSection === 'Offline' ? '#ffffff' : 'var(--color-text-stone-body)',
-                      boxShadow: activeSection === 'Offline' ? '0 2px 8px rgba(104, 46, 54, 0.25)' : 'none',
-                      transition: 'all 0.2s ease'
-                    }}
-                  >
-                    <MapPin size={14} />
-                    <span>प्रत्यक्ष पूजा (Offline)</span>
-                  </button>
+            <form onSubmit={handleSubmit} noValidate className="bk-form">
+              {/* Header + progress */}
+              <header className="bk-header">
+                <p className="bk-eyebrow">पूजा बुकिंग · चरण {step + 1} / {STEPS.length}</p>
+                <h3 id="bk-title" className="bk-title">{currentStep.title}</h3>
+                <p className="bk-hint">{currentStep.hint}</p>
 
-                  <button
-                    type="button"
-                    onClick={() => handleSectionSwitch('Online')}
-                    style={{
-                      flex: 1,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '0.4rem',
-                      padding: '0.48rem 0.8rem',
-                      borderRadius: 'var(--radius-full)',
-                      border: 'none',
-                      cursor: 'pointer',
-                      fontWeight: activeSection === 'Online' ? 600 : 500,
-                      fontSize: '0.86rem',
-                      background: activeSection === 'Online' ? 'var(--color-burgundy-base)' : 'transparent',
-                      color: activeSection === 'Online' ? '#ffffff' : 'var(--color-text-stone-body)',
-                      boxShadow: activeSection === 'Online' ? '0 2px 8px rgba(104, 46, 54, 0.25)' : 'none',
-                      transition: 'all 0.2s ease'
-                    }}
-                  >
-                    <Video size={14} />
-                    <span>ऑनलाइन पूजा (Online)</span>
-                  </button>
+                <ol className="bk-steps" aria-label="Booking progress">
+                  {STEPS.map((s, i) => {
+                    const state = i < step ? 'done' : i === step ? 'active' : 'todo';
+                    return (
+                      <li key={s.label} className={`bk-step is-${state}`}>
+                        <button
+                          type="button"
+                          onClick={() => goToStep(i)}
+                          disabled={i > maxStep}
+                          aria-current={i === step ? 'step' : undefined}
+                        >
+                          <span className="bk-step-dot">{state === 'done' ? <Check size={12} /> : i + 1}</span>
+                          <span className="bk-step-label">{s.label}</span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ol>
+                <div className="bk-progress" aria-hidden="true">
+                  <span style={{ width: `${(step / (STEPS.length - 1)) * 100}%` }} />
                 </div>
+              </header>
 
-                {/* Mode Context Helper Note */}
-                <div style={{
-                  textAlign: 'center',
-                  fontSize: '0.74rem',
-                  color: 'var(--color-text-stone-body)',
-                  marginTop: '0.3rem'
-                }}>
-                  {activeSection === 'Offline' 
-                    ? '📍 यजमान के गृह, संस्थान अथवा तीर्थ स्थल पर व्यक्तिगत उपस्थिति'
-                    : '📹 लाइव HD वीडियो प्रसारण, वैदिक संकल्प एवं घर पर प्रसाद प्रेषण'}
-                </div>
-              </div>
-
-              {errorMsg && (
-                <div style={{
-                  padding: '0.65rem 0.9rem',
-                  background: 'rgba(185, 28, 28, 0.08)',
-                  border: '1px solid rgba(185, 28, 28, 0.25)',
-                  borderRadius: 'var(--radius-xs)',
-                  color: '#b91c1c',
-                  fontSize: '0.82rem',
-                  marginBottom: '0.85rem'
-                }}>
-                  {errorMsg}
-                </div>
+              {step > 0 && activeServiceObj && (
+                <button type="button" className="bk-selected-pill" onClick={() => goToStep(0)}>
+                  <Sparkles size={13} />
+                  <span className="bk-selected-text">{activeServiceObj.title}</span>
+                  <span className="bk-selected-mode">{modeLabel(activeSection)}</span>
+                  <Pencil size={12} />
+                </button>
               )}
 
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {/* SECTION A: अनुष्ठान चयन */}
-                <div>
-                  <label style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.35rem',
-                    fontSize: '0.82rem',
-                    fontWeight: 600,
-                    color: 'var(--color-text-charcoal)',
-                    marginBottom: '0.25rem'
-                  }}>
-                    <Sparkles size={13} color="var(--color-burgundy-base)" />
-                    <span>पूजन / अनुष्ठान का चयन करें *</span>
-                  </label>
-                  <select
-                    name="service_title"
-                    value={formData.service_title}
-                    onChange={handleServiceChange}
-                    className="form-select"
-                    style={{
-                      width: '100%',
-                      fontSize: '0.88rem',
-                      padding: '0.52rem 0.75rem'
-                    }}
-                    required
-                  >
-                    {serviceCategories.map(cat => {
-                      const items = filteredServices.filter(s => s.category === cat.id);
-                      if (items.length === 0) return null;
-                      return (
-                        <optgroup key={cat.id} label={cat.label}>
-                          {items.map(s => (
-                            <option key={s.id} value={s.title}>
-                              {s.title}
-                            </option>
-                          ))}
-                        </optgroup>
-                      );
-                    })}
-                  </select>
+              {errorMsg && <div className="bk-alert" role="alert">{errorMsg}</div>}
 
-                  {/* Ritual Duration & Samagri Preview */}
-                  {activeServiceObj && (
-                    <div style={{
-                      marginTop: '0.3rem',
-                      padding: '0.35rem 0.65rem',
-                      background: 'var(--color-stone-surface)',
-                      borderRadius: 'var(--radius-xs)',
-                      border: '1px solid var(--color-stone-border)',
-                      fontSize: '0.76rem',
-                      color: 'var(--color-text-stone-body)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      flexWrap: 'wrap',
-                      gap: '0.3rem'
-                    }}>
-                      <span>
-                        <strong style={{ color: 'var(--color-burgundy-base)', fontWeight: 600 }}>अवधि:</strong> {activeServiceObj.duration}
-                      </span>
-                      <span>
-                        <strong style={{ color: 'var(--color-burgundy-base)', fontWeight: 600 }}>सामग्री:</strong> {activeServiceObj.samagri_included ? 'संस्थान द्वारा प्रदत्त' : 'यजमान द्वारा व्यवस्था'}
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* SECTION B: ३ संभावित तिथियों का विकल्प (BAND OF 3 DATES) */}
-                <div style={{
-                  background: 'var(--color-stone-surface)',
-                  padding: '0.75rem 0.9rem',
-                  borderRadius: 'var(--radius-xs)',
-                  border: '1px solid var(--color-stone-border)'
-                }}>
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: '0.45rem',
-                    flexWrap: 'wrap',
-                    gap: '0.4rem'
-                  }}>
-                    <span style={{
-                      fontSize: '0.82rem',
-                      fontWeight: 600,
-                      color: 'var(--color-burgundy-base)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.35rem'
-                    }}>
-                      <CalendarDays size={14} />
-                      <span>३ संभावित तिथियों का विकल्प (Date Band)</span>
-                    </span>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--color-text-stone-body)' }}>
-                      पंडित जी इनमें से सर्वश्रेष्ठ मुहूर्त तय करेंगे
-                    </span>
-                  </div>
-
-                  <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
-                    gap: '0.65rem'
-                  }}>
-                    <div>
-                      <label style={{
-                        display: 'block',
-                        fontSize: '0.78rem',
-                        fontWeight: 600,
-                        color: 'var(--color-text-charcoal)',
-                        marginBottom: '0.2rem'
-                      }}>
-                        १. प्राथमिक तिथि *
-                      </label>
-                      <input
-                        type="date"
-                        name="preferred_date"
-                        value={formData.preferred_date}
-                        onChange={handleChange}
-                        min={new Date().toISOString().split('T')[0]}
-                        className="form-input"
-                        style={{ fontSize: '0.84rem', padding: '0.48rem 0.65rem', width: '100%' }}
-                        required
-                      />
+              <div key={step} className="bk-panel">
+                {/* STEP 1: Ritual */}
+                {step === 0 && (
+                  <>
+                    <div className="bk-mode-grid" role="radiogroup" aria-label="पूजा का माध्यम">
+                      {[
+                        { id: 'Offline', icon: MapPin, title: 'प्रत्यक्ष पूजा', desc: 'पंडित जी आपके स्थल पर' },
+                        { id: 'Online', icon: Video, title: 'ऑनलाइन पूजा', desc: 'लाइव वीडियो व प्रसाद प्रेषण' }
+                      ].map(({ id, icon: Icon, title, desc }) => (
+                        <button
+                          key={id}
+                          type="button"
+                          role="radio"
+                          aria-checked={activeSection === id}
+                          className={`bk-mode-card ${activeSection === id ? 'is-selected' : ''}`}
+                          onClick={() => handleSectionSwitch(id)}
+                        >
+                          <span className="bk-mode-icon"><Icon size={18} /></span>
+                          <span>
+                            <strong>{title}</strong>
+                            <small>{desc}</small>
+                          </span>
+                        </button>
+                      ))}
                     </div>
 
-                    <div>
-                      <label style={{
-                        display: 'block',
-                        fontSize: '0.78rem',
-                        fontWeight: 600,
-                        color: 'var(--color-text-charcoal)',
-                        marginBottom: '0.2rem'
-                      }}>
-                        २. द्वितीय तिथि *
-                      </label>
-                      <input
-                        type="date"
-                        name="second_date"
-                        value={formData.second_date}
-                        onChange={handleChange}
-                        min={new Date().toISOString().split('T')[0]}
-                        className="form-input"
-                        style={{ fontSize: '0.84rem', padding: '0.48rem 0.65rem', width: '100%' }}
-                        required
-                      />
+                    <div className="bk-chips" role="tablist" aria-label="श्रेणी">
+                      {visibleChips.map(chip => (
+                        <button
+                          key={chip.id}
+                          type="button"
+                          role="tab"
+                          aria-selected={activeCategory === chip.id}
+                          className={`bk-chip ${activeCategory === chip.id ? 'is-selected' : ''}`}
+                          onClick={() => setActiveCategory(chip.id)}
+                        >
+                          {chip.label}
+                        </button>
+                      ))}
                     </div>
 
-                    <div>
-                      <label style={{
-                        display: 'block',
-                        fontSize: '0.78rem',
-                        fontWeight: 500,
-                        color: 'var(--color-text-stone-body)',
-                        marginBottom: '0.2rem'
-                      }}>
-                        ३. अतिरिक्त तिथि (वैकल्पिक)
-                      </label>
-                      <input
-                        type="date"
-                        name="third_date"
-                        value={formData.third_date}
-                        onChange={handleChange}
-                        min={new Date().toISOString().split('T')[0]}
-                        className="form-input"
-                        style={{ fontSize: '0.84rem', padding: '0.48rem 0.65rem', width: '100%' }}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* SECTION C: कैलेंडर समय एवं Google Calendar एकीकरण */}
-                <div>
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: '0.25rem'
-                  }}>
-                    <label style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.35rem',
-                      fontSize: '0.82rem',
-                      fontWeight: 600,
-                      color: 'var(--color-text-charcoal)',
-                      margin: 0
-                    }}>
-                      <Clock size={13} color="var(--color-burgundy-base)" />
-                      <span>कैलेंडर समय (वार्ता / परामर्श समय) *</span>
-                    </label>
-
-                    <button
-                      type="button"
-                      onClick={() => setShowCalendarViewer(!showCalendarViewer)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: 'var(--color-burgundy-base)',
-                        fontSize: '0.74rem',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.25rem',
-                        padding: '0 0.2rem',
-                        textDecoration: 'underline'
-                      }}
-                    >
-                      <Calendar size={12} />
-                      <span>पंडित जी का Google Calendar देखें</span>
-                    </button>
-                  </div>
-
-                  <select
-                    name="preferred_time"
-                    value={formData.preferred_time}
-                    onChange={handleChange}
-                    className="form-select"
-                    style={{ fontSize: '0.84rem', padding: '0.52rem 0.75rem', width: '100%' }}
-                  >
-                    {calendarTimeSlots.map(slot => (
-                      <option key={slot.value} value={slot.value}>
-                        {slot.label}
-                      </option>
-                    ))}
-                  </select>
-
-                  {/* Panditji Google Calendar Embedded Schedule Preview */}
-                  {showCalendarViewer && (
-                    <div style={{
-                      marginTop: '0.45rem',
-                      background: '#ffffff',
-                      border: '1.5px solid var(--color-burgundy-base)',
-                      borderRadius: 'var(--radius-xs)',
-                      overflow: 'hidden',
-                      boxShadow: '0 4px 14px rgba(104, 46, 54, 0.15)'
-                    }}>
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '0.4rem 0.75rem',
-                        background: 'var(--color-stone-surface)',
-                        borderBottom: '1px solid var(--color-stone-border)',
-                        fontSize: '0.78rem',
-                        color: 'var(--color-burgundy-base)',
-                        fontWeight: 600
-                      }}>
-                        <span>पं. राकेश चन्द्र रावल (panditrakeshrawal26@gmail.com) का कैलेंडर</span>
-                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                          <a
-                            href="https://calendar.google.com/calendar/u/0/r"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{ color: 'var(--color-burgundy-base)', fontSize: '0.72rem', display: 'flex', alignItems: 'center', gap: '0.2rem' }}
-                          >
-                            <ExternalLink size={11} />
-                            <span>फुल स्क्रीन</span>
-                          </a>
+                    <div className="bk-service-list" role="radiogroup" aria-label="अनुष्ठान">
+                      {visibleServices.map(svc => {
+                        const selected = formData.service_title === svc.title;
+                        return (
                           <button
+                            key={svc.id}
                             type="button"
-                            onClick={() => setShowCalendarViewer(false)}
-                            style={{
-                              background: 'none',
-                              border: 'none',
-                              cursor: 'pointer',
-                              fontWeight: 700,
-                              color: 'var(--color-burgundy-base)',
-                              fontSize: '0.85rem'
-                            }}
+                            role="radio"
+                            aria-checked={selected}
+                            className={`bk-service ${selected ? 'is-selected' : ''}`}
+                            onClick={() => selectService(svc)}
                           >
-                            ✕
+                            <span className="bk-service-main">
+                              <strong>{svc.title}</strong>
+                              <small>{svc.title_en}</small>
+                            </span>
+                            <span className="bk-service-meta">
+                              <Clock size={11} /> {svc.duration}
+                            </span>
+                            <span className="bk-radio" aria-hidden="true">{selected && <Check size={12} />}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {renderError('service_title')}
+                  </>
+                )}
+
+                {/* STEP 2: Dates & time */}
+                {step === 1 && (
+                  <>
+                    <div className="bk-date-grid">
+                      {dateFields.map((f, i) => (
+                        <label
+                          key={f.name}
+                          className={`bk-date-card ${formData[f.name] ? 'is-filled' : ''} ${fieldErrors[f.name] ? 'has-error' : ''}`}
+                        >
+                          <span className="bk-date-head">
+                            <span className="bk-date-num">{i + 1}</span>
+                            {f.label}
+                            {!f.required && <em>वैकल्पिक</em>}
+                          </span>
+                          <input
+                            type="date"
+                            name={f.name}
+                            value={formData[f.name]}
+                            onChange={handleChange}
+                            min={today}
+                            onClick={(e) => { try { e.currentTarget.showPicker?.(); } catch { /* unsupported */ } }}
+                            className="bk-input"
+                            aria-invalid={!!fieldErrors[f.name]}
+                          />
+                          <span className="bk-date-pretty">
+                            {formData[f.name] ? formatDate(formData[f.name]) : 'तिथि चुनें'}
+                          </span>
+                          {renderError(f.name)}
+                        </label>
+                      ))}
+                    </div>
+
+                    <div className="bk-section-label">
+                      <span>वार्ता हेतु सुविधाजनक समय</span>
+                      <button
+                        type="button"
+                        className="bk-link"
+                        onClick={() => setShowCalendarViewer(v => !v)}
+                      >
+                        <Calendar size={12} />
+                        {showCalendarViewer ? 'कैलेंडर छिपाएं' : 'पंडित जी का कैलेंडर देखें'}
+                      </button>
+                    </div>
+
+                    {showCalendarViewer && (
+                      <div className="bk-calendar">
+                        <div className="bk-calendar-bar">
+                          <span>पंडित जी की उपलब्धता (इस सप्ताह)</span>
+                          <a href="https://calendar.google.com/calendar/u/0/r" target="_blank" rel="noopener noreferrer">
+                            <ExternalLink size={11} /> फुल स्क्रीन
+                          </a>
+                        </div>
+                        <iframe
+                          src="https://calendar.google.com/calendar/embed?src=panditrakeshrawal26%40gmail.com&ctz=Asia%2FKolkata&mode=WEEK"
+                          title="Panditji Live Google Calendar"
+                        />
+                      </div>
+                    )}
+
+                    <div className="bk-slot-grid" role="radiogroup" aria-label="समय">
+                      {timeSlots.map(slot => {
+                        const selected = formData.preferred_time === slot.value;
+                        return (
+                          <button
+                            key={slot.value}
+                            type="button"
+                            role="radio"
+                            aria-checked={selected}
+                            className={`bk-slot ${selected ? 'is-selected' : ''}`}
+                            onClick={() => setField('preferred_time', slot.value)}
+                          >
+                            <strong>{slot.label}</strong>
+                            <small>{slot.time}</small>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+
+                {/* STEP 3: Devotee details */}
+                {step === 2 && (
+                  <div className="bk-fields">
+                    <div className="bk-field">
+                      <label htmlFor="bk-name">यजमान का पूरा नाम</label>
+                      <input
+                        id="bk-name"
+                        type="text"
+                        name="devotee_name"
+                        autoComplete="name"
+                        placeholder="उदा. राहुल शर्मा"
+                        value={formData.devotee_name}
+                        onChange={handleChange}
+                        className="bk-input"
+                        aria-invalid={!!fieldErrors.devotee_name}
+                        autoFocus
+                      />
+                      {renderError('devotee_name')}
+                    </div>
+
+                    <div className="bk-field">
+                      <label htmlFor="bk-phone">मोबाइल / WhatsApp नंबर</label>
+                      <input
+                        id="bk-phone"
+                        type="tel"
+                        inputMode="tel"
+                        name="phone"
+                        autoComplete="tel"
+                        placeholder="98XXX XXXXX"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className="bk-input"
+                        aria-invalid={!!fieldErrors.phone}
+                      />
+                      {renderError('phone')}
+                    </div>
+
+                    <div className="bk-field bk-field-wide">
+                      {activeSection === 'Offline' ? (
+                        <>
+                          <label htmlFor="bk-venue">पूजा स्थल / निवास का पता</label>
+                          <textarea
+                            id="bk-venue"
+                            name="venue_address"
+                            rows={2}
+                            autoComplete="street-address"
+                            placeholder="घर का पता, कॉलोनी, शहर"
+                            value={formData.venue_address}
+                            onChange={handleChange}
+                            className="bk-input"
+                            aria-invalid={!!fieldErrors.venue_address}
+                          />
+                          {renderError('venue_address')}
+                        </>
+                      ) : (
+                        <>
+                          <label htmlFor="bk-city">गृह नगर एवं देश</label>
+                          <input
+                            id="bk-city"
+                            type="text"
+                            name="city"
+                            autoComplete="address-level2"
+                            placeholder="उदा. मुंबई, लंदन, न्यूयॉर्क"
+                            value={formData.city}
+                            onChange={handleChange}
+                            className="bk-input"
+                            aria-invalid={!!fieldErrors.city}
+                          />
+                          {renderError('city')}
+                        </>
+                      )}
+                    </div>
+
+                    <div className="bk-field">
+                      <label htmlFor="bk-gotra">गोत्र <em>वैकल्पिक</em></label>
+                      <input
+                        id="bk-gotra"
+                        type="text"
+                        name="gotra"
+                        placeholder="उदा. कश्यप"
+                        value={formData.gotra}
+                        onChange={handleChange}
+                        className="bk-input"
+                      />
+                    </div>
+
+                    <div className="bk-field bk-field-wide">
+                      <label htmlFor="bk-sankalp">विशेष सङ्कल्प / मनोकामना <em>वैकल्पिक</em></label>
+                      <div className="bk-chips bk-chips-tight">
+                        {sankalpSuggestions.map(tag => {
+                          const selected = selectedSankalp.includes(tag);
+                          return (
+                            <button
+                              key={tag}
+                              type="button"
+                              aria-pressed={selected}
+                              className={`bk-chip ${selected ? 'is-selected' : ''}`}
+                              onClick={() => toggleSankalp(tag)}
+                            >
+                              {selected ? <Check size={11} /> : '+'} {tag}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <textarea
+                        id="bk-sankalp"
+                        name="special_sankalp"
+                        rows={2}
+                        placeholder="अपनी मनोकामना लिखें या ऊपर से चुनें"
+                        value={formData.special_sankalp}
+                        onChange={handleChange}
+                        className="bk-input"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* STEP 4: Review */}
+                {step === 3 && (
+                  <>
+                    <dl className="bk-review">
+                      {reviewRows.map(row => (
+                        <div key={row.label} className="bk-review-row">
+                          <dt>{row.label}</dt>
+                          <dd>{row.value}</dd>
+                          <button type="button" className="bk-link" onClick={() => goToStep(row.step)} aria-label={`${row.label} बदलें`}>
+                            <Pencil size={12} />
                           </button>
                         </div>
-                      </div>
-                      <iframe
-                        src="https://calendar.google.com/calendar/embed?src=panditrakeshrawal26%40gmail.com&ctz=Asia%2FKolkata&mode=WEEK"
-                        style={{ border: 0, width: '100%', height: '240px' }}
-                        frameBorder="0"
-                        scrolling="no"
-                        title="Panditji Live Google Calendar"
-                      />
+                      ))}
+                    </dl>
+
+                    <div className="bk-note">
+                      <PhoneCall size={15} />
+                      <p>बुकिंग के बाद पंडित जी आपसे ऑनलाइन कॉल पर बात कर इन तिथियों में से सर्वश्रेष्ठ मुहूर्त तय करेंगे।</p>
                     </div>
-                  )}
-                </div>
 
-                {/* SECTION D: यजमान संपर्क विवरण (Devotee & Phone Grid) */}
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                  gap: '0.75rem'
-                }}>
-                  <div>
-                    <label style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.35rem',
-                      fontSize: '0.82rem',
-                      fontWeight: 600,
-                      color: 'var(--color-text-charcoal)',
-                      marginBottom: '0.25rem'
-                    }}>
-                      <User size={13} color="var(--color-burgundy-base)" />
-                      <span>यजमान का पूरा नाम *</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="devotee_name"
-                      placeholder="उदा. राहुल शर्मा"
-                      value={formData.devotee_name}
-                      onChange={handleChange}
-                      className="form-input"
-                      style={{ fontSize: '0.86rem', padding: '0.52rem 0.75rem' }}
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.35rem',
-                      fontSize: '0.82rem',
-                      fontWeight: 600,
-                      color: 'var(--color-text-charcoal)',
-                      marginBottom: '0.25rem'
-                    }}>
-                      <MessageSquare size={13} color="var(--color-burgundy-base)" />
-                      <span>मोबाइल / WhatsApp नंबर *</span>
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      placeholder="+91 98275 14489"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="form-input"
-                      style={{ fontSize: '0.86rem', padding: '0.52rem 0.75rem' }}
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* SECTION E: स्थल/शहर एवं गोत्र */}
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                  gap: '0.75rem'
-                }}>
-                  <div>
-                    <label style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.35rem',
-                      fontSize: '0.82rem',
-                      fontWeight: 600,
-                      color: 'var(--color-text-charcoal)',
-                      marginBottom: '0.25rem'
-                    }}>
-                      <MapPin size={13} color="var(--color-burgundy-base)" />
+                    <label className={`bk-terms ${fieldErrors.terms_accepted ? 'has-error' : ''}`}>
+                      <input
+                        type="checkbox"
+                        name="terms_accepted"
+                        checked={formData.terms_accepted}
+                        onChange={handleChange}
+                      />
                       <span>
-                        {activeSection === 'Offline' ? 'पूजा स्थल / निवास का पता *' : 'गृह नगर एवं देश (City / Country) *'}
+                        मैं{' '}
+                        <button type="button" className="bk-link bk-link-inline" onClick={() => setIsTermsOpen(true)}>
+                          सेवा नियम एवं शर्तें
+                        </button>{' '}
+                        स्वीकार करता/करती हूँ।
                       </span>
                     </label>
-                    {activeSection === 'Offline' ? (
-                      <input
-                        type="text"
-                        name="venue_address"
-                        placeholder="घर का पता, कॉलोनी, शहर (उदा. हरिद्वार / दिल्ली)"
-                        value={formData.venue_address}
-                        onChange={handleChange}
-                        className="form-input"
-                        style={{ fontSize: '0.86rem', padding: '0.52rem 0.75rem' }}
-                        required
-                      />
-                    ) : (
-                      <input
-                        type="text"
-                        name="city"
-                        placeholder="उदा. मुंबई, दिल्ली, लंदन, न्यूयॉर्क"
-                        value={formData.city}
-                        onChange={handleChange}
-                        className="form-input"
-                        style={{ fontSize: '0.86rem', padding: '0.52rem 0.75rem' }}
-                        required
-                      />
-                    )}
-                  </div>
-
-                  <div>
-                    <label style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.35rem',
-                      fontSize: '0.82rem',
-                      fontWeight: 500,
-                      color: 'var(--color-text-stone-body)',
-                      marginBottom: '0.25rem'
-                    }}>
-                      <FileText size={13} color="var(--color-burgundy-base)" />
-                      <span>गोत्र (वैकल्पिक)</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="gotra"
-                      placeholder="उदा. कश्यप / भारद्वाज"
-                      value={formData.gotra}
-                      onChange={handleChange}
-                      className="form-input"
-                      style={{ fontSize: '0.86rem', padding: '0.52rem 0.75rem' }}
-                    />
-                  </div>
-                </div>
-
-                {/* SECTION F: विशेष संकल्प / मनोकामना */}
-                <div>
-                  <label style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.35rem',
-                    fontSize: '0.82rem',
-                    fontWeight: 500,
-                    color: 'var(--color-text-stone-body)',
-                    marginBottom: '0.25rem'
-                  }}>
-                    <Sparkles size={13} color="var(--color-burgundy-base)" />
-                    <span>विशेष सङ्कल्प / मनोकामना (वैकल्पिक)</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="special_sankalp"
-                    placeholder="उदा. गृह प्रवेश, स्वास्थ्य लाभ, विवाह बाधा शांति, पितृ तर्पण..."
-                    value={formData.special_sankalp}
-                    onChange={handleChange}
-                    className="form-input"
-                    style={{ fontSize: '0.86rem', padding: '0.52rem 0.75rem' }}
-                  />
-                </div>
-
-                {/* SECTION G: ऑनलाइन मुहूर्त निर्धारण कॉल नोटिस */}
-                <div style={{
-                  background: 'rgba(104, 46, 54, 0.05)',
-                  border: '1px solid rgba(104, 46, 54, 0.18)',
-                  borderRadius: 'var(--radius-xs)',
-                  padding: '0.55rem 0.8rem',
-                  fontSize: '0.78rem',
-                  color: 'var(--color-text-charcoal)',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '0.45rem'
-                }}>
-                  <PhoneCall size={15} color="var(--color-burgundy-base)" style={{ flexShrink: 0, marginTop: '2px' }} />
-                  <div>
-                    <strong style={{ color: 'var(--color-burgundy-base)' }}>बुकिंग उपरांत ऑनलाइन कॉल:</strong>{' '}
-                    आपकी दी गई ३ तिथियों में से सर्वश्रेष्ठ पंचांग मुहूर्त निर्धारण हेतु बुकिंग के पश्चात पंडित जी द्वारा आपके साथ एक ऑनलाइन वीडियो/ऑडियो कॉल आयोजित की जाएगी।
-                  </div>
-                </div>
-
-                {/* SECTION H: नियम एवं शर्तें (TERMS AND CONDITIONS CHECKBOX) */}
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.3rem 0',
-                  fontSize: '0.8rem'
-                }}>
-                  <input
-                    type="checkbox"
-                    id="termsCheckbox"
-                    name="terms_accepted"
-                    checked={formData.terms_accepted}
-                    onChange={handleChange}
-                    style={{
-                      width: '16px',
-                      height: '16px',
-                      accentColor: 'var(--color-burgundy-base)',
-                      cursor: 'pointer'
-                    }}
-                  />
-                  <label htmlFor="termsCheckbox" style={{ margin: 0, cursor: 'pointer', color: 'var(--color-text-charcoal)' }}>
-                    मैं VedNetra की{' '}
-                    <button
-                      type="button"
-                      onClick={() => setIsTermsOpen(true)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: 'var(--color-burgundy-base)',
-                        fontWeight: 600,
-                        textDecoration: 'underline',
-                        cursor: 'pointer',
-                        padding: 0,
-                        fontSize: 'inherit'
-                      }}
-                    >
-                      सेवा नियम एवं शर्तें (Terms & Conditions)
-                    </button>{' '}
-                    स्वीकार करता/करती हूँ। *
-                  </label>
-                </div>
-
-                {/* Submit CTA */}
-                <div style={{ marginTop: '0.2rem' }}>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="btn-editorial-primary"
-                    style={{
-                      width: '100%',
-                      justifyContent: 'center',
-                      padding: '0.75rem 1.2rem',
-                      fontSize: '0.94rem',
-                      fontWeight: 600,
-                      cursor: isSubmitting ? 'not-allowed' : 'pointer'
-                    }}
-                  >
-                    <Sparkles size={17} />
-                    <span>
-                      {isSubmitting 
-                        ? 'Booking दर्ज की जा रही है...' 
-                        : `Book Now (${activeSection === 'Offline' ? 'प्रत्यक्ष पूजा' : 'ऑनलाइन पूजा'})`}
-                    </span>
-                  </button>
-                </div>
-              </form>
-            </div>
-          ) : (
-            /* ==============================================================
-               CONFIRMATION & ONLINE CALL / GOOGLE CALENDAR VIEW
-               ============================================================== */
-            <div style={{ textAlign: 'center', padding: '0.4rem 0' }}>
-              <div style={{
-                width: '54px',
-                height: '54px',
-                borderRadius: '50%',
-                background: 'rgba(22, 101, 52, 0.08)',
-                border: '1.5px solid #15803d',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 0.9rem auto',
-                color: '#15803d'
-              }}>
-                <CheckCircle2 size={30} />
+                    {renderError('terms_accepted')}
+                  </>
+                )}
               </div>
 
-              <h4 style={{ 
-                fontSize: '1.4rem', 
-                color: 'var(--color-text-charcoal)', 
-                marginBottom: '0.2rem',
-                fontFamily: 'var(--font-heading)',
-                fontWeight: 600
-              }}>
-                शुभम् भवतु! सङ्कल्प सफलतापूर्वक दर्ज हुआ
-              </h4>
-              <p style={{ fontSize: '0.86rem', color: 'var(--color-text-stone-body)', marginBottom: '1.1rem' }}>
-                Booking Ref No.: <strong style={{ color: 'var(--color-burgundy-base)', fontWeight: 600 }}>#VN-{submittedBooking.id}</strong>
+              {/* Footer actions */}
+              <footer className="bk-footer">
+                {step > 0 ? (
+                  <button type="button" className="bk-btn-ghost" onClick={goBack}>
+                    <ArrowLeft size={15} /> पीछे
+                  </button>
+                ) : <span />}
+                <button type="submit" className="bk-btn-primary" disabled={isSubmitting}>
+                  {isLastStep
+                    ? (isSubmitting ? 'बुकिंग दर्ज हो रही है…' : <><Sparkles size={15} /> बुकिंग पक्की करें</>)
+                    : <>आगे बढ़ें <ArrowRight size={15} /></>}
+                </button>
+              </footer>
+            </form>
+          ) : (
+            /* Confirmation */
+            <div className="bk-success">
+              <div className="bk-success-icon"><CheckCircle2 size={30} /></div>
+              <h3 id="bk-title" className="bk-title">शुभम् भवतु! बुकिंग दर्ज हुई</h3>
+              <p className="bk-hint">
+                Booking Ref: <strong>#VN-{submittedBooking.id}</strong>
               </p>
 
-              {/* Next Step: Online Muhurat Determination Call Highlight */}
-              <div style={{
-                background: 'rgba(104, 46, 54, 0.06)',
-                border: '1px solid rgba(104, 46, 54, 0.22)',
-                borderRadius: 'var(--radius-xs)',
-                padding: '0.85rem 1rem',
-                textAlign: 'left',
-                marginBottom: '1.1rem'
-              }}>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  fontSize: '0.88rem',
-                  fontWeight: 600,
-                  color: 'var(--color-burgundy-base)',
-                  marginBottom: '0.25rem'
-                }}>
-                  <PhoneCall size={16} />
-                  <span>अगला चरण: पंडित जी के साथ ऑनलाइन मुहूर्त निर्धारण कॉल</span>
-                </div>
-                <p style={{ fontSize: '0.8rem', color: 'var(--color-text-charcoal)', margin: 0, lineHeight: 1.5 }}>
-                  पंडित जी (<code>panditrakeshrawal26@gmail.com</code>) द्वारा आपकी ३ संभावित तिथियों का पंचांग विश्लेषण किया जा रहा है। संस्थान द्वारा शीघ्र ही आपसे ऑनलाइन कॉल (Google Meet / Phone) का समय सुनिश्चित कर सर्वश्रेष्ठ मुहूर्त पर अंतिम मुहर लगाई जाएगी।
-                </p>
+              <div className="bk-success-card">
+                <strong>{submittedBooking.service_title}</strong>
+                <span>{modeLabel(submittedBooking.ritual_mode)} · {submittedBooking.devotee_name}</span>
+                <span>
+                  {[submittedBooking.preferred_date, submittedBooking.second_date, submittedBooking.third_date]
+                    .filter(Boolean).map(formatDate).join('  |  ')}
+                </span>
               </div>
 
-              {/* Summary Details Card */}
-              <div style={{
-                background: 'var(--color-stone-surface)',
-                border: '1px solid var(--color-stone-border)',
-                borderRadius: 'var(--radius-xs)',
-                padding: '1rem',
-                textAlign: 'left',
-                marginBottom: '1.25rem',
-                fontSize: '0.84rem',
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                gap: '0.55rem',
-                color: 'var(--color-text-stone-body)'
-              }}>
-                <div>
-                  <span style={{ color: 'var(--color-burgundy-base)', fontWeight: 600 }}>माध्यम:</span>{' '}
-                  <strong style={{ color: 'var(--color-text-charcoal)' }}>
-                    {submittedBooking.ritual_mode === 'Offline' ? 'प्रत्यक्ष पूजा (Offline)' : 'ऑनलाइन पूजा (Online)'}
-                  </strong>
-                </div>
-                <div>
-                  <span style={{ color: 'var(--color-burgundy-base)', fontWeight: 600 }}>यजमान:</span>{' '}
-                  <strong style={{ color: 'var(--color-text-charcoal)' }}>{submittedBooking.devotee_name}</strong>
-                </div>
-                <div>
-                  <span style={{ color: 'var(--color-burgundy-base)', fontWeight: 600 }}>पूजा:</span>{' '}
-                  <strong style={{ color: 'var(--color-text-charcoal)' }}>{submittedBooking.service_title}</strong>
-                </div>
-                <div>
-                  <span style={{ color: 'var(--color-burgundy-base)', fontWeight: 600 }}>१. प्राथमिक तिथि:</span>{' '}
-                  <span>{submittedBooking.preferred_date}</span>
-                </div>
-                {submittedBooking.second_date && (
-                  <div>
-                    <span style={{ color: 'var(--color-burgundy-base)', fontWeight: 600 }}>२. द्वितीय तिथि:</span>{' '}
-                    <span>{submittedBooking.second_date}</span>
-                  </div>
-                )}
-                {submittedBooking.third_date && (
-                  <div>
-                    <span style={{ color: 'var(--color-burgundy-base)', fontWeight: 600 }}>३. अतिरिक्त तिथि:</span>{' '}
-                    <span>{submittedBooking.third_date}</span>
-                  </div>
-                )}
-                <div>
-                  <span style={{ color: 'var(--color-burgundy-base)', fontWeight: 600 }}>कैलेंडर समय:</span>{' '}
-                  <span>{submittedBooking.preferred_time}</span>
-                </div>
-                {submittedBooking.venue_address && (
-                  <div>
-                    <span style={{ color: 'var(--color-burgundy-base)', fontWeight: 600 }}>स्थल/पता:</span>{' '}
-                    <span>{submittedBooking.venue_address}</span>
-                  </div>
-                )}
-                {submittedBooking.city && (
-                  <div>
-                    <span style={{ color: 'var(--color-burgundy-base)', fontWeight: 600 }}>नगर:</span>{' '}
-                    <span>{submittedBooking.city}</span>
-                  </div>
-                )}
-                {submittedBooking.gotra && (
-                  <div>
-                    <span style={{ color: 'var(--color-burgundy-base)', fontWeight: 600 }}>गोत्र:</span>{' '}
-                    <span>{submittedBooking.gotra}</span>
-                  </div>
-                )}
+              <div className="bk-note">
+                <PhoneCall size={15} />
+                <p><strong>अगला चरण:</strong> पंडित जी शीघ्र ही आपसे संपर्क कर मुहूर्त निर्धारण कॉल का समय तय करेंगे।</p>
               </div>
 
-              {/* Action Buttons: WhatsApp & Google Calendar Add */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-                <a
-                  href={generateWhatsAppLink()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-editorial-primary"
-                  style={{
-                    justifyContent: 'center',
-                    fontSize: '0.92rem',
-                    padding: '0.75rem'
-                  }}
-                >
-                  <MessageSquare size={16} />
-                  <span>पंडित जी को व्हाट्सएप पर ३ तिथियां व विवरण भेजें</span>
+              <div className="bk-success-actions">
+                <a href={generateWhatsAppLink()} target="_blank" rel="noopener noreferrer" className="bk-btn-primary">
+                  <MessageSquare size={16} /> WhatsApp पर विवरण भेजें
                 </a>
-
-                <a
-                  href={generateGoogleCalendarEventUrl()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.45rem',
-                    background: 'var(--color-stone-surface)',
-                    border: '1px solid var(--color-stone-border)',
-                    borderRadius: 'var(--radius-xs)',
-                    color: 'var(--color-burgundy-base)',
-                    padding: '0.65rem',
-                    fontSize: '0.86rem',
-                    fontWeight: 600,
-                    textDecoration: 'none',
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  <Calendar size={15} />
-                  <span>Google Calendar में जोड़ें (Add to Google Calendar)</span>
+                <a href={generateGoogleCalendarEventUrl()} target="_blank" rel="noopener noreferrer" className="bk-btn-ghost">
+                  <Calendar size={15} /> Google Calendar में जोड़ें
                 </a>
-
-                <button
-                  type="button"
-                  onClick={handleClose}
-                  className="btn-editorial-dark"
-                  style={{ justifyContent: 'center', padding: '0.65rem' }}
-                >
-                  समाप्त करें (Close)
+                <button type="button" onClick={handleClose} className="bk-link bk-link-center">
+                  बंद करें
                 </button>
               </div>
             </div>
@@ -1157,12 +822,11 @@ export default function BookingModal({ initialService, isOpen, onClose }) {
         </div>
       </div>
 
-      {/* Terms and Conditions Modal */}
       <TermsAndConditionsModal
         isOpen={isTermsOpen}
         onClose={() => setIsTermsOpen(false)}
         onAccept={() => {
-          setFormData(prev => ({ ...prev, terms_accepted: true }));
+          setField('terms_accepted', true);
           setIsTermsOpen(false);
         }}
       />
