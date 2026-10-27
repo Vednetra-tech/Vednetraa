@@ -1,0 +1,29 @@
+{
+  "name": "vednetra-web",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "start": "next start --port 3000",
+    "lint": "oxlint src",
+    "init-db": "node scripts/initDb.js",
+    "reset-test-db": "node scripts/resetTestDb.js",
+    "test:auth": "node scripts/testAuth.js",
+    "test:platform": "node scripts/testPlatformEnhancements.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^18.0.9",
+    "jsonwebtoken": "^9.0.3",
+    "lucide-react": "^1.62.0",
+    "mongodb": "^7.7.0",
+    "next": "^16.4.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "oxlint": "^1.90.0"
+  }
+}
