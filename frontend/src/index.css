@@ -1,0 +1,915 @@
+/* ==========================================================================
+   Vedनेत्र (VedNetra) — Refined Minimal Luxury Vedic Design System
+   Official Portal for Pandit Rakesh Chandra Rawal
+   Signature Palette: Textured Burgundy (#682e36), Soft Peach Sandalwood (#f09a73), Muted Champagne (#d9c2a7)
+   No Green-Yellow colors. Soft, serene, balanced aesthetics.
+   ========================================================================== */
+
+:root {
+  /* ==========================================================================
+     Vedनेत्र Luxury Editorial Design System (Template Architecture)
+     Screenshot Primary Color with Refined Red Shade:
+     - Base Stone Canvas: #F6EFEA (warm linen/stone with subtle red/terracotta warmth)
+     - Base Stone Surface: #EDE2DC (warm alabaster sandstone)
+     - Base Stone Card: #FAF6F3 (pure stone ivory)
+     - Dark Contrast Velvet: #18080C (contrast obsidian with deep wine-red undertone)
+     
+     Signature Brand Palette:
+     - Royal Crimson Burgundy: #682E36 (Brand Core & Primary Buttons)
+     - Burgundy Deep: #3D1219 (Deep Wine Accent)
+     - Terracotta Flame: #EA8B70 (Sacred Flame Accent)
+     - Sandalwood Champagne: #DFCCB7 (Warm Metallic Neutral)
+     ========================================================================== */
+
+  /* Primary Screenshot Stone Canvas with subtle red shade */
+  --color-stone-canvas: #f6efea;
+  --color-stone-surface: #ede2dc;
+  --color-stone-surface-alt: #e6dad2;
+  --color-stone-card: #faf6f3;
+  --color-stone-border: rgba(104, 46, 54, 0.14);
+  --color-stone-border-hover: rgba(104, 46, 54, 0.32);
+
+  /* Contrast Dark Section (The 3-cards dark strip in the template) */
+  --color-stone-dark: #18080c;
+  --color-stone-dark-card: #230d13;
+  --color-stone-dark-border: rgba(234, 139, 112, 0.2);
+
+  /* Color 1: Royal Crimson Burgundy / Deep Wine */
+  --color-burgundy-base: #682e36;
+  --color-burgundy-muted: #522129;
+  --color-burgundy-deep: #38141b;
+  --color-burgundy-dark: #20080d;
+  --color-burgundy-velvet: #140407;
+  --color-burgundy-surface: rgba(56, 19, 25, 0.72);
+  --color-burgundy-surface-hover: rgba(74, 25, 33, 0.85);
+
+  /* Color 2: Luminous Sandalwood Terracotta (Logo Mark Complement) */
+  --color-terracotta: #ea8b70;
+  --color-terracotta-hover: #f19f87;
+  --color-terracotta-light: #fad5ca;
+  --color-terracotta-deep: #b85e46;
+  --color-terracotta-subtle: rgba(234, 139, 112, 0.12);
+  --color-terracotta-glow: rgba(234, 139, 112, 0.22);
+
+  /* Design Tokens mapped to the 2-Color Architecture */
+  --color-flame: var(--color-terracotta);
+  --color-flame-hover: var(--color-terracotta-hover);
+  --color-flame-light: var(--color-terracotta-light);
+  --color-flame-deep: var(--color-terracotta-deep);
+  --color-flame-subtle: var(--color-terracotta-subtle);
+
+  /* Muted Warm Ivory & Soft Sandalwood Tones */
+  --color-champagne-500: #e2c7ba;
+  --color-champagne-400: #eedcd3;
+  --color-champagne-300: #f8eee8;
+  --color-champagne-subtle: rgba(234, 139, 112, 0.1);
+  --color-gold-500: var(--color-terracotta);
+  --color-gold-400: var(--color-champagne-400);
+  --color-gold-300: var(--color-champagne-300);
+
+  /* Clean, High-Legibility Typography on Stone Canvas */
+  --color-text-charcoal: #1c080e;
+  --color-text-stone-body: #47242c;
+  --color-text-stone-muted: #734e56;
+  --color-ivory: #fdfaf7;
+  --color-silk: #ede4dc;
+  --color-cream: #dfd4ca;
+  --color-text-muted: rgba(253, 250, 247, 0.85);
+  --color-text-subtle: rgba(253, 250, 247, 0.6);
+
+  /* Surfaces & Borders */
+  --surface-card: rgba(52, 17, 23, 0.75);
+  --surface-card-hover: rgba(68, 23, 31, 0.88);
+  --border-subtle: rgba(234, 139, 112, 0.18);
+  --border-active: rgba(234, 139, 112, 0.45);
+  --border-flame-subtle: rgba(234, 139, 112, 0.28);
+  --color-border-gold: var(--border-subtle);
+  --border-gold-subtle: var(--border-subtle);
+  --border-gold-active: var(--border-active);
+
+  /* Typography */
+  --font-serif-royal: 'Cinzel', 'Rozha One', 'Cormorant Garamond', Georgia, serif;
+  --font-serif-devanagari: 'Rozha One', 'Cinzel', serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Radii & Natural Shadows */
+  --radius-none: 0px;
+  --radius-xs: 2px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  --shadow-subtle: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 8px 24px rgba(28, 8, 14, 0.12);
+  --shadow-card-hover: 0 16px 36px rgba(28, 8, 14, 0.18);
+  --shadow-pedestal: 0 24px 48px -12px rgba(35, 10, 16, 0.22);
+
+  /* Transitions */
+  --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================================================================
+   Base Resets
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  scroll-padding-top: 110px;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  background-color: var(--color-stone-canvas);
+  color: var(--color-text-charcoal);
+  font-family: var(--font-sans);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Subtle warm grain / paper texture using subtle vignette */
+  background-image: 
+    radial-gradient(ellipse at 50% 0%, rgba(246, 239, 234, 0.9) 0%, rgba(237, 226, 220, 0.98) 100%),
+    url('/bg-texture.webp');
+  background-repeat: repeat;
+  background-attachment: fixed;
+  background-blend-mode: normal, multiply;
+}
+
+/* Custom Selection */
+::selection {
+  background: var(--color-burgundy-base);
+  color: #ffffff;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-stone-surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-burgundy-base);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-burgundy-deep);
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif-royal);
+  color: var(--color-text-charcoal);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.28;
+}
+
+h1 {
+  font-weight: 600;
+}
+
+p {
+  color: var(--color-text-stone-body);
+  font-weight: 400;
+  line-height: 1.7;
+}
+
+.container {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0 1.1rem;
+  }
+}
+
+/* ==========================================================================
+   Refined Typography Gradients for Editorial Stone Canvas
+   ========================================================================== */
+.text-flame-gradient {
+  background: linear-gradient(135deg, var(--color-text-charcoal) 0%, var(--color-burgundy-base) 65%, #8c2a38 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, var(--color-burgundy-deep) 0%, var(--color-burgundy-base) 70%, var(--color-terracotta-deep) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+/* ==========================================================================
+   Minimal Luxury Vedic Cards — Harmonized Stone & Burgundy Architecture
+   ========================================================================== */
+.card-vedic {
+  background: var(--color-stone-card);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--color-stone-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-subtle);
+  color: var(--color-text-charcoal);
+  transition: all var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-vedic h1,
+.card-vedic h2,
+.card-vedic h3,
+.card-vedic h4 {
+  color: var(--color-text-charcoal);
+}
+
+.card-vedic p {
+  color: var(--color-text-stone-body);
+}
+
+.card-vedic::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-burgundy-base), transparent);
+  opacity: 0.35;
+  transition: opacity var(--transition-fast);
+}
+
+.card-vedic:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-burgundy-base);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.card-vedic:hover::before {
+  opacity: 0.9;
+}
+
+/* ==========================================================================
+   Clean, Tasteful Buttons (Harmonized with Stone & Burgundy Theme)
+   ========================================================================== */
+.btn-flame {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: var(--color-burgundy-base);
+  color: #ffffff !important;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.86rem;
+  letter-spacing: 0.04em;
+  padding: 0.75rem 1.6rem;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--color-burgundy-base);
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 3px 10px rgba(104, 46, 54, 0.2);
+  transition: all var(--transition-fast);
+}
+
+.btn-flame:hover {
+  transform: translateY(-2px);
+  background: #1c080e;
+  border-color: #1c080e;
+  box-shadow: 0 6px 16px rgba(28, 8, 14, 0.3);
+}
+
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: var(--color-stone-surface);
+  color: var(--color-text-charcoal);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.86rem;
+  letter-spacing: 0.04em;
+  padding: 0.75rem 1.6rem;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--color-stone-border);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.btn-gold:hover {
+  transform: translateY(-2px);
+  background: var(--color-stone-canvas);
+  border-color: var(--color-burgundy-base);
+  color: var(--color-burgundy-base);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: transparent;
+  color: var(--color-text-charcoal);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.86rem;
+  letter-spacing: 0.04em;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--color-stone-border);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.btn-outline:hover {
+  background: var(--color-stone-surface);
+  border-color: var(--color-burgundy-base);
+  color: var(--color-burgundy-base);
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   Editorial High-Fashion Template Styles (Matching Screenshot Architecture)
+   ========================================================================== */
+.btn-editorial-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: var(--color-burgundy-base);
+  color: #ffffff !important;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.85rem 2.2rem;
+  border: 1px solid var(--color-burgundy-base);
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 14px rgba(104, 46, 54, 0.25);
+}
+
+.btn-editorial-primary:hover {
+  background: #1c080e;
+  border-color: #1c080e;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(28, 8, 14, 0.35);
+}
+
+.btn-editorial-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: #1c080e;
+  color: #ffffff !important;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.85rem 2.2rem;
+  border: 1px solid #1c080e;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 14px rgba(28, 8, 14, 0.25);
+}
+
+.btn-editorial-dark:hover {
+  background: var(--color-burgundy-base);
+  border-color: var(--color-burgundy-base);
+  color: #ffffff !important;
+  transform: translateY(-2px);
+}
+
+.btn-editorial-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: transparent;
+  color: var(--color-text-charcoal) !important;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.4rem;
+  border: 1px solid var(--color-stone-border);
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.btn-editorial-outline:hover {
+  background: var(--color-stone-surface);
+  border-color: var(--color-burgundy-base);
+  color: var(--color-burgundy-base) !important;
+  transform: translateY(-2px);
+}
+
+.link-editorial-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: inherit;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: gap 0.2s ease, opacity 0.2s ease;
+}
+
+.link-editorial-arrow:hover {
+  gap: 0.75rem;
+  opacity: 0.85;
+}
+
+.link-editorial-underline {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  transition: opacity 0.2s ease;
+}
+
+.link-editorial-underline:hover {
+  opacity: 0.75;
+}
+
+/* ==========================================================================
+   Badges
+   ========================================================================== */
+.badge-flame {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--color-terracotta-subtle);
+  border: 1px solid var(--border-flame-subtle);
+  color: var(--color-terracotta);
+  font-family: var(--font-serif-royal);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.28rem 0.85rem;
+  border-radius: 8px;
+  line-height: 1.35;
+}
+
+.badge-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--color-champagne-subtle);
+  border: 1px solid var(--border-subtle);
+  color: var(--color-champagne-400);
+  font-family: var(--font-serif-royal);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.28rem 0.85rem;
+  border-radius: 8px;
+  line-height: 1.35;
+}
+
+/* Section Header Motif */
+.section-header {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto 3.2rem auto;
+}
+
+.section-header .tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--color-burgundy-base);
+  font-size: 0.84rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.section-header h2 {
+  font-size: clamp(1.9rem, 3.8vw, 2.5rem);
+  margin-bottom: 0.85rem;
+  color: var(--color-text-charcoal);
+}
+
+.section-header p {
+  font-size: 1.02rem;
+  color: var(--color-text-stone-body);
+  line-height: 1.7;
+}
+
+.motif-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.1rem;
+  margin: 1rem auto;
+}
+
+.motif-divider .line {
+  height: 1px;
+  width: 50px;
+  background: linear-gradient(90deg, transparent, var(--color-burgundy-base), transparent);
+}
+
+.motif-divider .symbol {
+  color: var(--color-burgundy-base);
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--color-text-charcoal);
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.02em;
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  background: var(--color-stone-canvas);
+  border: 1px solid var(--color-stone-border);
+  border-radius: var(--radius-xs);
+  padding: 0.82rem 1.05rem;
+  color: var(--color-text-charcoal);
+  font-family: var(--font-sans);
+  font-size: 0.94rem;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--color-burgundy-base);
+  background: #ffffff;
+  box-shadow: 0 0 10px rgba(104, 46, 54, 0.15);
+}
+
+.form-textarea {
+  min-height: 95px;
+  resize: vertical;
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(24, 7, 12, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  overflow-y: auto;
+  animation: fadeIn 0.25s ease;
+}
+
+.modal-content {
+  background: var(--color-stone-card);
+  border: 1px solid var(--color-stone-border);
+  box-shadow: 0 24px 64px rgba(71, 26, 33, 0.25);
+  border-radius: var(--radius-xs);
+  color: var(--color-text-charcoal);
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  padding: 2.2rem;
+  animation: modalScaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-content h1,
+.modal-content h2,
+.modal-content h3,
+.modal-content h4 {
+  color: var(--color-text-charcoal);
+  font-family: var(--font-serif-royal);
+}
+
+.modal-content p {
+  color: var(--color-text-stone-body);
+}
+
+.modal-content label {
+  color: var(--color-text-charcoal);
+  font-weight: 600;
+  font-size: 0.84rem;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 640px) {
+  .modal-content {
+    padding: 1.4rem;
+  }
+}
+
+/* ==========================================================================
+   Serene, Ambient Vedic Animations
+   ========================================================================== */
+
+@keyframes ambientRotate {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes subtleFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes gentlePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(184, 93, 67, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(184, 93, 67, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(184, 93, 67, 0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ==========================================================================
+   Random Floating Mantras & Sacred Vedic Symbols
+   ========================================================================== */
+@keyframes floatRandom1 {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  25% {
+    transform: translate(25px, -32px) rotate(4deg);
+  }
+  50% {
+    transform: translate(-18px, -55px) rotate(-3deg);
+  }
+  75% {
+    transform: translate(16px, -24px) rotate(2deg);
+  }
+  100% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+}
+
+@keyframes floatRandom2 {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  25% {
+    transform: translate(-30px, 26px) rotate(-4deg);
+  }
+  50% {
+    transform: translate(22px, 48px) rotate(3deg);
+  }
+  75% {
+    transform: translate(-15px, 20px) rotate(-2deg);
+  }
+  100% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+}
+
+@keyframes floatRandom3 {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  30% {
+    transform: translate(32px, -22px) scale(1.08);
+  }
+  60% {
+    transform: translate(-22px, 24px) scale(0.95);
+  }
+  85% {
+    transform: translate(14px, 8px) scale(1.02);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+@keyframes floatRandom4 {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  20% {
+    transform: translate(18px, 28px) rotate(-3deg);
+  }
+  50% {
+    transform: translate(-25px, -18px) rotate(5deg);
+  }
+  80% {
+    transform: translate(24px, -36px) rotate(-2deg);
+  }
+  100% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+}
+
+.sacred-mantra-particle {
+  position: absolute;
+  font-family: var(--font-serif-royal);
+  color: #8C424E;
+  user-select: none;
+  pointer-events: none;
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 14px rgba(104, 46, 54, 0.2);
+  will-change: transform;
+}
+
+/* ==========================================================================
+   Structured Form Divisions & Sub-divisions
+   ========================================================================== */
+.form-division {
+  background: var(--color-stone-surface);
+  border: 1px solid var(--color-stone-border);
+  border-radius: var(--radius-xs);
+  padding: 1.25rem 1.35rem;
+  margin-bottom: 1.35rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-division:hover {
+  border-color: var(--color-burgundy-base);
+}
+
+.division-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.1rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--color-stone-border);
+}
+
+.division-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-burgundy-base);
+  color: #FFFFFF;
+  font-size: 0.78rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.division-title {
+  font-family: var(--font-heading);
+  font-size: 0.98rem;
+  color: var(--color-text-charcoal);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.division-subtitle {
+  font-size: 0.76rem;
+  color: var(--color-text-stone-body);
+  margin-left: auto;
+}
+
+.form-subdivision {
+  margin-bottom: 0.95rem;
+}
+
+.form-subdivision:last-child {
+  margin-bottom: 0;
+}
+
+.subdivision-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-burgundy-base);
+  margin-bottom: 0.45rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Item 5: Reduced Motion Support (Accessibility / WCAG 2.1 AAA)
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .sacred-mantra-particle,
+  .hero-ambient-glow,
+  .cosmic-orbit,
+  .floating-wa-btn {
+    animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   Item 20 & 21: High-Performance Image & Font Rendering Optimizations
+   ========================================================================== */
+img {
+  content-visibility: auto;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
