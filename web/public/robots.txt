@@ -1,0 +1,10 @@
+# VedNetra Robots.txt
+# Official Website of Pandit Rakesh Chandra Rawal
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /*?resetToken=*
+Disallow: /*?email=*
+
+# Sitemaps
+Sitemap: https://vednetra.com/sitemap.xml
