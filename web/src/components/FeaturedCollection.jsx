@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { Heart, ArrowRight } from 'lucide-react';
 
@@ -107,7 +109,7 @@ export default function FeaturedCollection({ onSelectServiceForBooking, onOpenAs
               color: 'var(--color-text-stone-muted)',
               letterSpacing: '0.04em'
             }}>
-              Most revered sacred rituals conducted by Pandit Rakesh Chandra Rawal
+              Most revered sacred rituals conducted by Pandit Rakesh Rawal
             </span>
           </div>
 

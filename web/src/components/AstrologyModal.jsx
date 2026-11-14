@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { X, Sparkles, CheckCircle2, MessageSquare, Compass, Heart, Gem } from 'lucide-react';
 
@@ -76,7 +78,7 @@ export default function AstrologyModal({ initialService, isOpen, onClose }) {
     if (!submittedData) return '#';
     const text = encodeURIComponent(
       `ॐ नमः शिवाय\n` +
-      `नमस्ते पंडित राकेश चन्द्र रावल जी,\n\n` +
+      `नमस्ते पंडित राकेश रावल जी,\n\n` +
       `मैंने VedNetra पर ज्योतिष Consultation अनुरोध दर्ज किया है:\n` +
       `• Consultation प्रकार: ${submittedData.consultation_type}\n` +
       `• जातक नाम: ${submittedData.devotee_name}\n` +

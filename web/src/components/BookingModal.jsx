@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -327,7 +329,7 @@ export default function BookingModal({ initialService, isOpen, onClose }) {
     if (!submittedBooking) return '#';
     const text = encodeURIComponent(
       `ॐ नमो भगवते वासुदेवाय\n` +
-      `नमस्ते पंडित राकेश चन्द्र रावल जी,\n\n` +
+      `नमस्ते पंडित राकेश रावल जी,\n\n` +
       `मैंने VedNetra पोर्टल पर पूजा सङ्कल्प Booking दर्ज की है:\n` +
       `• Booking Ref: #VN-${submittedBooking.id}\n` +
       `• माध्यम: ${submittedBooking.ritual_mode === 'Offline' ? 'प्रत्यक्ष पूजा (Offline)' : 'ऑनलाइन पूजा (Online)'}\n` +

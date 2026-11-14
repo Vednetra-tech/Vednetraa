@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -262,7 +264,7 @@ export default function ClientBookingsModal({ isOpen, onClose, onOpenNewBooking 
                 अभी कोई पूजा Booking दर्ज नहीं है
               </h3>
               <p style={{ fontSize: '0.84rem', color: 'var(--color-text-stone-body)', maxWidth: '400px', margin: '0 auto 1.5rem auto' }}>
-                पंडित राकेश चन्द्र रावल जी के मार्गदर्शन में अपने अभीष्ट अनुष्ठान या पूजा का सङ्कल्प लें।
+                पंडित राकेश रावल जी के मार्गदर्शन में अपने अभीष्ट अनुष्ठान या पूजा का सङ्कल्प लें।
               </p>
               <button
                 onClick={() => {
