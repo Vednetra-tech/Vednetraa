@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -201,7 +203,7 @@ export default function AdminPortal({ onClose, onOpenAuth }) {
               lineHeight: 1.65,
               marginBottom: '1.85rem'
             }}>
-              यह अनुभाग केवल पूज्य पंडित राकेश चन्द्र रावल जी एवं अधिकृत व्यवस्थापक के लिए आरक्षित है। यजमानों के सङ्कल्प एवं बुकिंग प्रबंधन हेतु कृपया लॉगिन करें।
+              यह अनुभाग केवल पूज्य पंडित राकेश रावल जी एवं अधिकृत व्यवस्थापक के लिए आरक्षित है। यजमानों के सङ्कल्प एवं बुकिंग प्रबंधन हेतु कृपया लॉगिन करें।
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send, MessageSquare, CheckCircle2 } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
@@ -105,7 +107,7 @@ export default function ContactSection() {
                 कार्यालय एवं आश्रम संपर्क
               </h3>
               <p style={{ fontSize: '0.9rem', color: 'var(--color-text-stone-body)', marginBottom: '2rem' }}>
-                पं. राकेश चन्द्र रावल जी के सान्निध्य में पूजा का संकल्प सुनिश्चित करें।
+                पं. राकेश रावल जी के सान्निध्य में पूजा का संकल्प सुनिश्चित करें।
               </p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.4rem' }}>
@@ -168,9 +170,9 @@ export default function ContactSection() {
                     <MapPin size={18} />
                   </div>
                   <div>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--color-burgundy-base)', textTransform: 'uppercase', fontWeight: 600 }}>तीर्थ एवं मुख्य केंद्र</div>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--color-burgundy-base)', textTransform: 'uppercase', fontWeight: 600 }}>मुख्य सेवा केंद्र</div>
                     <div style={{ color: 'var(--color-text-charcoal)', fontSize: '0.98rem', fontWeight: 500 }}>
-                      हरिद्वार / ऋषिकेश, उत्तराखंड (भारत)
+                      उज्जैन • रतलाम • इंदौर • देवास (मध्य प्रदेश)
                     </div>
                   </div>
                 </div>
@@ -180,7 +182,7 @@ export default function ContactSection() {
             {/* Direct WhatsApp CTA */}
             <div style={{ marginTop: '2.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--color-stone-border)' }}>
               <a
-                href="https://wa.me/919827514489?text=नमस्ते%20पंडित%20राकेश%20चन्द्र%20रावल%20जी,%20मुझे%20पूजा%20एवं%20मुहूर्त%20के%20विषय%20में%20जानकारी%20चाहिए।"
+                href="https://wa.me/919827514489?text=नमस्ते%20पंडित%20राकेश%20रावल%20जी,%20मुझे%20पूजा%20एवं%20मुहूर्त%20के%20विषय%20में%20जानकारी%20चाहिए।"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-editorial-primary"

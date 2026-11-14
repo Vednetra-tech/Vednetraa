@@ -15,7 +15,7 @@ export async function createInquiry(req, res) {
     // Item 10: Email Notification to Panditji
     console.log(`\n================================================================`);
     console.log(`📧 [VedNetra Inquiry Email Dispatch] New Devotee Message Received`);
-    console.log(`To: पं. राकेश चन्द्र रावल <panditrakeshrawal26@gmail.com>`);
+    console.log(`To: पं. राकेश रावल <panditrakeshrawal26@gmail.com>`);
     console.log(`From: ${name} (${phone}${email ? `, ${email}` : ''})`);
     console.log(`Subject: ${finalSubject}`);
     console.log(`Message: "${message}"`);

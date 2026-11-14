@@ -14,22 +14,22 @@ const JSON_LD = `
       "url": "https://vednetra.com",
       "logo": "https://vednetra.com/Logo-transparent.png",
       "image": "https://vednetra.com/og-image.svg",
-      "description": "पूज्य पंडित राकेश चन्द्र रावल जी द्वारा शास्त्रोक्त श्रीमद्भागवत कथा, महापूजा, नवग्रह शांति, कालसर्प व वास्तु दोष निवारण, रत्न सलाह एवं कुण्डली मिलान।",
+      "description": "पूज्य पंडित राकेश रावल जी द्वारा शास्त्रोक्त श्रीमद्भागवत कथा, महापूजा, नवग्रह शांति, कालसर्प व वास्तु दोष निवारण, रत्न सलाह एवं कुण्डली मिलान। 41 वर्षों की पावन वैदिक साधना परंपरा।",
       "telephone": "+91-9827514489",
       "email": "panditrakeshrawal26@gmail.com",
       "priceRange": "₹₹",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "गंगा तट, वैदिक पीठ",
-        "addressLocality": "हरिद्वार",
-        "addressRegion": "उत्तराखंड",
-        "postalCode": "249401",
+        "streetAddress": "महाकाल नगरी / मालवा अंचल",
+        "addressLocality": "उज्जैन",
+        "addressRegion": "मध्य प्रदेश",
+        "postalCode": "456001",
         "addressCountry": "IN"
       },
       "geo": {
         "@type": "GeoCoordinates",
-        "latitude": "29.9457",
-        "longitude": "78.1642"
+        "latitude": "23.1765",
+        "longitude": "75.7885"
       },
       "openingHoursSpecification": {
         "@type": "OpeningHoursSpecification",
@@ -41,8 +41,8 @@ const JSON_LD = `
       },
       "founder": {
         "@type": "Person",
-        "name": "पं. राकेश चन्द्र रावल",
-        "jobTitle": "वेदाचार्य एवं कथा व्यास",
+        "name": "पं. राकेश रावल",
+        "jobTitle": "वेदाचार्य, कथा व्यास एवं ज्योतिर्विद",
         "email": "panditrakeshrawal26@gmail.com",
         "telephone": "+91-9827514489"
       }
@@ -89,11 +89,11 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
 
         {/* Primary Page Title & Meta Description */}
-        <title>Vedनेत्र | पं. राकेश चन्द्र रावल — वैदिक अनुष्ठान, भागवत कथा एवं ज्योतिष संस्थान</title>
-        <meta name="title" content="Vedनेत्र | पं. राकेश चन्द्र रावल — वैदिक अनुष्ठान, भागवत कथा एवं ज्योतिष संस्थान" />
-        <meta name="description" content="पूज्य पंडित राकेश चन्द्र रावल जी द्वारा शास्त्रोक्त श्रीमद्भागवत कथा, महापूजा, नवग्रह शांति, कालसर्प व वास्तु दोष निवारण, रत्न सलाह एवं कुण्डली मिलान। प्रत्यक्ष एवं ऑनलाइन संकल्प सेवा।" />
-        <meta name="keywords" content="पंडित राकेश चन्द्र रावल, भागवत कथा, वैदिक पूजा, कालसर्प दोष निवारण, वास्तु दोष, कुण्डली मिलान, रुद्राभिषेक, हवन, हरिद्वार, ऋषिकेश, VedNetra" />
-        <meta name="author" content="पं. राकेश चन्द्र रावल" />
+        <title>Vedनेत्र | पं. राकेश रावल — 41 वर्षों की वैदिक साधना, भागवत कथा एवं ज्योतिष संस्थान</title>
+        <meta name="title" content="Vedनेत्र | पं. राकेश रावल — 41 वर्षों की वैदिक साधना, भागवत कथा एवं ज्योतिष संस्थान" />
+        <meta name="description" content="पूज्य पंडित राकेश रावल जी द्वारा शास्त्रोक्त श्रीमद्भागवत कथा, महापूजा, नवग्रह शांति, कालसर्प व वास्तु दोष निवारण, रत्न सलाह एवं कुण्डली मिलान। उज्जैन, रतलाम, इंदौर एवं देवास।" />
+        <meta name="keywords" content="पंडित राकेश रावल, Pandit Rakesh Rawal, भागवत कथा, वैदिक पूजा, कालसर्प दोष निवारण, वास्तु दोष, कुण्डली मिलान, रुद्राभिषेक, हवन, उज्जैन, रतलाम, इंदौर, देवास, VedNetra" />
+        <meta name="author" content="पं. राकेश रावल" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="theme-color" content="#682e36" />
         <meta name="color-scheme" content="dark" />
@@ -111,19 +111,19 @@ export default function RootLayout({ children }) {
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://vednetra.com/" />
         <meta property="og:site_name" content="Vedनेत्र (VedNetra)" />
-        <meta property="og:title" content="Vedनेत्र | पं. राकेश चन्द्र रावल — वैदिक अनुष्ठान एवं ज्योतिष संस्थान" />
+        <meta property="og:title" content="Vedनेत्र | पं. राकेश रावल — वैदिक अनुष्ठान एवं ज्योतिष संस्थान" />
         <meta property="og:description" content="शास्त्रोक्त श्रीमद्भागवत कथा, महापूजा, नवग्रह शांति, कालसर्प व वास्तु दोष निवारण, रत्न सलाह एवं कुण्डली मिलान। प्रत्यक्ष एवं ऑनलाइन संकल्प उपलब्ध।" />
         <meta property="og:image" content="https://vednetra.com/og-image.svg" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="वेदनेत्र — पं. राकेश चन्द्र रावल वैदिक अनुष्ठान एवं ज्योतिष संस्थान" />
+        <meta property="og:image:alt" content="वेदनेत्र — पं. राकेश रावल वैदिक अनुष्ठान एवं ज्योतिष संस्थान" />
         <meta property="og:locale" content="hi_IN" />
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:url" content="https://vednetra.com/" />
-        <meta name="twitter:title" content="Vedनेत्र | पं. राकेश चन्द्र रावल — वैदिक अनुष्ठान एवं ज्योतिष संस्थान" />
-        <meta name="twitter:description" content="पूज्य पंडित राकेश चन्द्र रावल जी द्वारा शास्त्रोक्त श्रीमद्भागवत कथा, महापूजा, नवग्रह शांति एवं कुण्डली मिलान।" />
+        <meta name="twitter:title" content="Vedनेत्र | पं. राकेश रावल — वैदिक अनुष्ठान एवं ज्योतिष संस्थान" />
+        <meta name="twitter:description" content="पूज्य पंडित राकेश रावल जी द्वारा शास्त्रोक्त श्रीमद्भागवत कथा, महापूजा, नवग्रह शांति एवं कुण्डली मिलान।" />
         <meta name="twitter:image" content="https://vednetra.com/og-image.svg" />
 
         {/* Faster Font Loading */}
@@ -135,6 +135,13 @@ export default function RootLayout({ children }) {
 
         {/* Schema.org JSON-LD. dangerouslySetInnerHTML keeps the JSON unescaped */}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON_LD }} />
+
+        {/* Automatic ngrok tunnel interstitial bypass for remote testing */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{document.cookie="ngrok-skip-browser-warning=69420;path=/;max-age=31536000"}catch(e){}`
+          }}
+        />
       </head>
       <body>
         <Providers>{children}</Providers>

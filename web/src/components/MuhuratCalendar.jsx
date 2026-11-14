@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Calendar, Moon, ArrowRight } from 'lucide-react';
 

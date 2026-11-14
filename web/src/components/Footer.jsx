@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Phone, Mail, MapPin } from 'lucide-react';
 
@@ -52,7 +54,7 @@ export default function Footer({ onSelectCategory, onOpenTerms, onToggleAdmin })
                 <source srcSet="/Logo-transparent.webp" type="image/webp" />
                 <img
                   src="/Logo-transparent.png"
-                  alt="VedNetra Logo - Pandit Rakesh Chandra Rawal"
+                  alt="VedNetra Logo - Pandit Rakesh Rawal"
                   loading="lazy"
                   decoding="async"
                   style={{
@@ -66,7 +68,7 @@ export default function Footer({ onSelectCategory, onOpenTerms, onToggleAdmin })
             </div>
 
             <div style={{ fontSize: '0.98rem', fontWeight: 500, color: 'var(--color-champagne-300)', marginBottom: '0.5rem' }}>
-              पं. राकेश चन्द्र रावल
+              पं. राकेश रावल (Pandit Rakesh Rawal)
             </div>
 
             <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: '1.75' }}>
@@ -140,7 +142,7 @@ export default function Footer({ onSelectCategory, onOpenTerms, onToggleAdmin })
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>
               <div>दूरभाष: +91 98275 14489</div>
               <div>ईमेल: panditrakeshrawal26@gmail.com</div>
-              <div>स्थान: हरिद्वार / ऋषिकेश, उत्तराखंड</div>
+              <div>मुख्य केंद्र: उज्जैन • रतलाम • इंदौर • देवास</div>
               <div style={{ color: 'var(--color-gold-300)', marginTop: '0.2rem', fontWeight: 500 }}>
                 प्रत्यक्ष एवं ऑनलाइन Consultation उपलब्ध
               </div>
@@ -161,7 +163,7 @@ export default function Footer({ onSelectCategory, onOpenTerms, onToggleAdmin })
           gap: '1.25rem'
         }}>
           <div>
-            © {new Date().getFullYear()} Vedनेत्र (VedNetra) — सर्वाधिकार सुरक्षित। पं. राकेश चन्द्र रावल।
+            © {new Date().getFullYear()} Vedनेत्र (VedNetra) — सर्वाधिकार सुरक्षित। पं. राकेश रावल।
           </div>
 
           <div style={{
