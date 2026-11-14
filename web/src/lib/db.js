@@ -28,7 +28,7 @@ export const seedUsers = [
     id: 2,
     role: 'panditji',
     email: 'panditrakeshrawal26@gmail.com',
-    name: 'पं. राकेश चन्द्र रावल',
+    name: 'पं. राकेश रावल',
     phone: '9827514489',
     password_hash: '$2b$10$9qiaxYgxpx4jUxSR9eyjc.Lq1lEhwr8.3U73wKn1iPC8m16V3wiMS',
     otp_code: null,

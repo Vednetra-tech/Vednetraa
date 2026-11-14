@@ -16,6 +16,10 @@ const apiCorsHeaders = [
 const nextConfig = {
   poweredByHeader: false,
   serverExternalPackages: ['mongodb'],
+  allowedDevOrigins: ['*.ngrok-free.app', '*.trycloudflare.com', 'localhost:3000', '127.0.0.1:3000'],
+  experimental: {
+    allowedDevOrigins: ['*.ngrok-free.app', '*.trycloudflare.com', 'localhost:3000', '127.0.0.1:3000']
+  },
   async headers() {
     return [
       { source: '/:path*', headers: securityHeaders },

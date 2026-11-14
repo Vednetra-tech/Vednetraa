@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 
@@ -50,7 +52,7 @@ export default function EditorialFeature({ onExploreServices, onOpenBooking }) {
               maxWidth: '460px',
               marginBottom: '2.2rem'
             }}>
-              Explore our authentic Vedic ceremonies, consecrated samagri, and time-honored rituals led by Pandit Rakesh Chandra Rawal with shastrik precision and pure devotion.
+              Explore our authentic Vedic ceremonies, consecrated samagri, and time-honored rituals led by Pandit Rakesh Rawal with shastrik precision and pure devotion.
             </p>
 
             <button

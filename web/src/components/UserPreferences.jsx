@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Cookie, X, Check } from 'lucide-react';
 import { trackEvent } from '../utils/actionLog';

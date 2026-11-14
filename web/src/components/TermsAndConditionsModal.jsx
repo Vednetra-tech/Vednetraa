@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { X, ShieldCheck, Calendar, Video, Clock, ScrollText, CheckCircle2 } from 'lucide-react';
 
@@ -73,7 +75,7 @@ export default function TermsAndConditionsModal({ isOpen, onClose, onAccept }) {
             नियम एवं सेवा शर्तें (Terms & Conditions)
           </h3>
           <p style={{ fontSize: '0.82rem', color: 'var(--color-text-stone-body)', margin: 0 }}>
-            Vedनेत्र • पं. राकेश चन्द्र रावल — वैदिक अनुष्ठान, मुहूर्त एवं संकल्प नियमावली
+            Vedनेत्र • पं. राकेश रावल — वैदिक अनुष्ठान, मुहूर्त एवं संकल्प नियमावली
           </p>
         </div>
 

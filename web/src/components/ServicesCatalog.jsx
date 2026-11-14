@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { staticServices } from '../data/staticServices';
 import ServiceDetailModal from './ServiceDetailModal';
@@ -118,7 +120,7 @@ export default function ServicesCatalog({ onSelectServiceForBooking, onOpenAstro
             <span className="line" />
           </div>
           <p>
-            पंडित राकेश चन्द्र रावल द्वारा यजमान की कुल-परंपरा, गोत्र एवं वैदिक आचार संहिता के अनुसार 
+            पंडित राकेश रावल द्वारा यजमान की कुल-परंपरा, गोत्र एवं वैदिक आचार संहिता के अनुसार 
             प्रत्येक अनुष्ठान का पूर्ण निष्ठा एवं फलदायी संकल्प से संपादन किया जाता है।
           </p>
         </div>

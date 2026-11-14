@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { ArrowRight, Sparkles, Compass } from 'lucide-react';
 
@@ -135,7 +137,7 @@ export default function Hero({ onOpenBooking, onOpenAstrology, onExploreServices
             marginTop: '0.15rem',
             marginBottom: '1rem'
           }}>
-            पं. राकेश चन्द्र रावल • सनातन वैदिक अनुष्ठान संस्थान
+            पं. राकेश रावल • 41 वर्षों की पावन वैदिक साधना परंपरा
           </div>
         </div>
 
@@ -186,7 +188,7 @@ export default function Hero({ onOpenBooking, onOpenAstrology, onExploreServices
               marginBottom: '1.4rem',
               maxWidth: '280px'
             }}>
-              Authentic Vedic rituals and Rasamrit Shrimad Bhagwat Katha guided by Pandit Rakesh Chandra Rawal.
+              Authentic Vedic rituals and Rasamrit Shrimad Bhagwat Katha guided by Pandit Rakesh Rawal (41+ Years Experience).
             </p>
 
             <button
@@ -356,7 +358,7 @@ export default function Hero({ onOpenBooking, onOpenAstrology, onExploreServices
               marginBottom: '1.5rem',
               maxWidth: '280px'
             }}>
-              पं. राकेश चन्द्र रावल • हरिद्वार एवं ऋषिकेश पावन तीर्थ पीठ। सादा व संगीतमय कथा, रुद्राभिषेक एवं नवग्रह शांति।
+              पं. राकेश रावल • उज्जैन, रतलाम, इंदौर एवं देवास। सादा व संगीतमय कथा, रुद्राभिषेक, वास्तु एवं नवग्रह शांति।
             </p>
 
             <button
